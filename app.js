@@ -1,20 +1,15 @@
-const request = require('request');
+const geocode = require('./utils/geocode');
+const forecast = require('./utils/forecast');
 
-const url =
-  'http://api.weatherstack.com/current?access_key=0cc8cc25eaef69b7846eeda2b5bc4d2f&query=Paris';
+const adress = process.argv[2];
 
-const options = { method: 'GET', json: true }; // set json: true <==> console.log(JSON.parse(response.body));
+geocode(adress, (err, { longitude, latitude, location } = {}) => {
+  if (!adress) return console.log('Please provide an adress');
+  if (err) return console.log('Error:' + err);
 
-console.log('start');
-request(url, options, (error, response, body) => {
-  // console.log(error);
-
-  // console.log(response.body);
-  console.log(
-    `${body.current.weather_descriptions[0]}.It's ${response.body.current.temperature} degree outside but it feels Like ${response.body.current.feelslike} degree `
-  );
-
-  // console.log(body);
+  forecast(latitude, longitude, (err, forecastData) => {
+    if (err) return console.log(err);
+    console.log(location);
+    console.log(forecastData);
+  });
 });
-
-console.log('start');
